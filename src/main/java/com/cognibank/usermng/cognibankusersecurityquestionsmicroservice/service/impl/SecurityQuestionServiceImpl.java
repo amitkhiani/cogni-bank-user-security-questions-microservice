@@ -10,8 +10,9 @@ import java.util.List;
 
 @Service
 public class SecurityQuestionServiceImpl implements SecurityQuestionService {
+
     @Autowired
-    SecurityQuestionRepository securityQuestionRepository;
+    private SecurityQuestionRepository securityQuestionRepository;
 
     @Override
     public List<SecurityQuestion> getAll() {
