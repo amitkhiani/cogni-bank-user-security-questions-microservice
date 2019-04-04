@@ -8,7 +8,7 @@ import javax.persistence.*;
         uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "question_id"})})
 public class UserAnswers {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(nullable = false)
     private String userId;

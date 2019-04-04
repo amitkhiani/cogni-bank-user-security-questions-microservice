@@ -2,6 +2,7 @@ package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.control
 
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.SecurityQuestionService;
+import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.UserAnswerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,9 @@ public class UserSecurityQuestionsControllerTest {
 
     @Mock
     private SecurityQuestionService securityQuestionService;
+
+    @Mock
+    private UserAnswerService userAnswerService;
 
     @InjectMocks
     private UserSecurityQuestionsController userSecurityQuestionsController;
@@ -68,5 +72,59 @@ public class UserSecurityQuestionsControllerTest {
                 .andExpect(jsonPath("$[0]").value(expectedResult.get(0)))
                 .andExpect(jsonPath("$[1]").value(expectedResult.get(1)))
                 .andExpect(jsonPath("$[2]").value(expectedResult.get(2)));
+    }
+
+    @Test
+    public void testToFetchAllTheQuestionsWithIds() throws Exception {
+        final String question1 = "How are you?";
+        final String question2 = "I'm asking how are you?";
+
+        SecurityQuestion secQuestion1 = new SecurityQuestion().withId(1L).withQuestion(question1);
+        SecurityQuestion secQuestion2 = new SecurityQuestion().withId(2L).withQuestion(question2);
+        List<SecurityQuestion> listOfQuestions = Arrays.asList(secQuestion1, secQuestion2);
+
+        // Mocking the service method of get all the security questions.
+        Mockito.when(securityQuestionService.getAll()).thenReturn(listOfQuestions);
+
+
+        // Performing the mock mvc.
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questionsWithIds").accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$[0].id").value(secQuestion1.getId()))
+                .andExpect(jsonPath("$[0].question").value(secQuestion1.getQuestion()))
+                .andExpect(jsonPath("$[1].id").value(secQuestion2.getId()))
+                .andExpect(jsonPath("$[1].question").value(secQuestion2.getQuestion()));
+    }
+
+    @Test
+    public void testToAddUserQuestionWithAnswer() throws Exception {
+
+        Mockito.when(userAnswerService.addAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString()))
+                .thenReturn(1L);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/createUserAnswer/12345")
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content("{\"questionId\":\"1\", \"answer\":\"I am good, thanks\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+    }
+
+    @Test
+    public void testToAddUserQuestionWithInvalidAnswer() throws Exception {
+
+        Mockito.when(userAnswerService.addAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString()))
+                .thenReturn(1L);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/createUserAnswer/12345")
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content("{\"questionId\":1, \"answer\":\"I\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Answer neither be less than 3 characters nor more that 64 characters."));
     }
 }
