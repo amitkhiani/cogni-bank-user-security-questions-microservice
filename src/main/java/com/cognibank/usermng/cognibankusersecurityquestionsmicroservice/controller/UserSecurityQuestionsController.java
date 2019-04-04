@@ -3,6 +3,7 @@ package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.control
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.CreateUserAnswerAndQuestionRequest;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.CreateUserAnswerAndQuestionResponse;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.RetrieveUserQuestionsResponse;
+import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.ValidateUserAnswerResponse;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.SecurityQuestionService;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.UserAnswerService;
@@ -58,7 +59,7 @@ public class UserSecurityQuestionsController {
 
     // To tag answers to the user selected questions.
     @PostMapping(path = "/createUserAnswer/{userId}")
-    public CreateUserAnswerAndQuestionResponse addUserAnswer(@PathVariable String userId, @Valid @RequestBody CreateUserAnswerAndQuestionRequest addQuestionRequest){
+    public CreateUserAnswerAndQuestionResponse addUserAnswer(@PathVariable String userId, @Valid @RequestBody CreateUserAnswerAndQuestionRequest addQuestionRequest) {
         Long generatedId = userAnswerService.addAnswer(userId, addQuestionRequest.getQuestionId(), addQuestionRequest.getAnswer());
         if(generatedId != null) {
             return new CreateUserAnswerAndQuestionResponse().withChanged(true);
@@ -74,6 +75,12 @@ public class UserSecurityQuestionsController {
                 .map(p -> new RetrieveUserQuestionsResponse().withId(p.getId()).withQuestion(p.getQuestion()))
                 .collect(Collectors.toList());
         return questionsResponse;
+    }
+
+    @PostMapping(path = "/checkUserAnswer/{userId}")
+    public ValidateUserAnswerResponse checkUserAnswer(@PathVariable String userId, @Valid @RequestBody CreateUserAnswerAndQuestionRequest validAnswerRequest) {
+        final boolean isValidAnswer = userAnswerService.checkAnswer(userId,validAnswerRequest.getQuestionId(), validAnswerRequest.getAnswer());
+        return new ValidateUserAnswerResponse().withValidated(isValidAnswer);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

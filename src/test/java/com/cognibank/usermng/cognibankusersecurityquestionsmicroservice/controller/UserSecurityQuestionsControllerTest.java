@@ -131,7 +131,7 @@ public class UserSecurityQuestionsControllerTest {
     }
 
     @Test
-    public void testToRetriveUserQuestionsWithUserId() throws Exception{
+    public void testToRetriveUserQuestionsWithUserId() throws Exception {
         List<SecurityQuestion> expectedQuestions = new ArrayList<>();
         expectedQuestions.add(new SecurityQuestion().withId(1L).withQuestion("What Is your favorite book?"));
         expectedQuestions.add(new SecurityQuestion().withId(2L).withQuestion("What is the name of the road you grew up on?"));
@@ -145,5 +145,18 @@ public class UserSecurityQuestionsControllerTest {
                 .andExpect(jsonPath("$[0].question").value("What Is your favorite book?"))
                 .andExpect(jsonPath("$[1].id").value("2"))
                 .andExpect(jsonPath("$[1].question").value("What is the name of the road you grew up on?"));
+    }
+
+    @Test
+    public void testToValidateTheUserAnswer() throws Exception {
+        Mockito.when(userAnswerService.checkAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString())).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/checkUserAnswer/12345")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content("{\"questionId\":1, \"answer\":\"Hello\"}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.validate").value("true"));
     }
 }
