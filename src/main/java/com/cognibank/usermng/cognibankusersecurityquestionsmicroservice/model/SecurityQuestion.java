@@ -1,10 +1,10 @@
 package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model;
 
-
 import javax.persistence.*;
 
 @Entity
 public class SecurityQuestion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,5 +28,13 @@ public class SecurityQuestion {
     public SecurityQuestion withQuestion(String question) {
         this.question = question;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityQuestion{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+                '}';
     }
 }

@@ -1,8 +1,6 @@
 package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service;
 
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
-import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.repository.SecurityQuestionRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

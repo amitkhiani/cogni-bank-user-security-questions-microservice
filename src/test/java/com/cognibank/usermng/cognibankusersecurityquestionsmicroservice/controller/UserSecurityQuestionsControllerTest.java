@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,7 +89,8 @@ public class UserSecurityQuestionsControllerTest {
 
 
         // Performing the mock mvc.
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questionsWithIds").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questionsWithIds")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -126,5 +128,22 @@ public class UserSecurityQuestionsControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value("Answer neither be less than 3 characters nor more that 64 characters."));
+    }
+
+    @Test
+    public void testToRetriveUserQuestionsWithUserId() throws Exception{
+        List<SecurityQuestion> expectedQuestions = new ArrayList<>();
+        expectedQuestions.add(new SecurityQuestion().withId(1L).withQuestion("What Is your favorite book?"));
+        expectedQuestions.add(new SecurityQuestion().withId(2L).withQuestion("What is the name of the road you grew up on?"));
+
+        Mockito.when(userAnswerService.getUserQuestions(Mockito.anyString())).thenReturn(expectedQuestions);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/question/12345"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[0].question").value("What Is your favorite book?"))
+                .andExpect(jsonPath("$[1].id").value("2"))
+                .andExpect(jsonPath("$[1].question").value("What is the name of the road you grew up on?"));
     }
 }

@@ -2,6 +2,7 @@ package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.control
 
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.CreateUserAnswerAndQuestionRequest;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.CreateUserAnswerAndQuestionResponse;
+import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.model.RetrieveUserQuestionsResponse;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.SecurityQuestionService;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.UserAnswerService;
@@ -65,15 +66,15 @@ public class UserSecurityQuestionsController {
         return new CreateUserAnswerAndQuestionResponse().withChanged(false);
     }
 
-    /*// get user's questions
-    /question/{userId}
-
-    // update user's answer for question
-
-    /question/{questionId}/{userId}
-
-    // add user's answer for question
-    POST /*/
+    @GetMapping(path = "/question/{userId}")
+    public List<RetrieveUserQuestionsResponse> getQuestionsForRespectiveUserId(@PathVariable String userId) {
+        final List<SecurityQuestion> securityQuestions = userAnswerService.getUserQuestions(userId);
+        final List<RetrieveUserQuestionsResponse> questionsResponse = securityQuestions
+                .stream()
+                .map(p -> new RetrieveUserQuestionsResponse().withId(p.getId()).withQuestion(p.getQuestion()))
+                .collect(Collectors.toList());
+        return questionsResponse;
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

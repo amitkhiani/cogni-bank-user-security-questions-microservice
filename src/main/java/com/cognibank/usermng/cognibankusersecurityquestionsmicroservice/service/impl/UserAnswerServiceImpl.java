@@ -9,6 +9,9 @@ import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserAnswerServiceImpl implements UserAnswerService {
     @Autowired
@@ -33,5 +36,14 @@ public class UserAnswerServiceImpl implements UserAnswerService {
     @Override
     public boolean checkAnswer(String userId, Long questionId, String answer) {
         return userAnswerRepository.findByUserIdAndQuestionIdAndAnswer(userId, questionId, answer).isPresent();
+    }
+
+    @Override
+    public List<SecurityQuestion> getUserQuestions(String userId) {
+        List<UserAnswers> userAnswers =  userAnswerRepository.findByUserId(userId);
+        List<SecurityQuestion> securityQuestions = userAnswers.stream()
+                .map(UserAnswers::getQuestion)
+                .collect(Collectors.toList());
+        return securityQuestions;
     }
 }

@@ -1,12 +1,12 @@
 package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model;
 
-
 import javax.persistence.*;
 
 @Entity
 @Table(indexes = {@Index(columnList = "userId")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "question_id"})})
 public class UserAnswers {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -52,5 +52,15 @@ public class UserAnswers {
     public UserAnswers withAnswer(String answer) {
         this.answer = answer;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAnswers{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", question=" + question +
+                ", answer='" + answer + '\'' +
+                '}';
     }
 }
