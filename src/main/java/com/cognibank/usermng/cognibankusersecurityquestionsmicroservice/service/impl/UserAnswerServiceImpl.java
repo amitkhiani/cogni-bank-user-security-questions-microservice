@@ -35,7 +35,7 @@ public class UserAnswerServiceImpl implements UserAnswerService {
 
     @Override
     public boolean checkAnswer(String userId, Long questionId, String answer) {
-        return userAnswerRepository.findByUserIdAndQuestionIdAndAnswer(userId, questionId, answer).isPresent();
+        return userAnswerRepository.findByUserIdAndQuestionIdAndAnswerIgnoreCase(userId, questionId, answer).isPresent();
     }
 
     @Override
