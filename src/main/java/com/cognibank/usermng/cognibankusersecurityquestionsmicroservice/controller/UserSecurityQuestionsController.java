@@ -7,6 +7,10 @@ import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controll
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.SecurityQuestionService;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.UserAnswerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
@@ -17,79 +21,31 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping(path = "/api/v1/usersecurity")
-public class UserSecurityQuestionsController {
 
-    /**
-     * Bean needed for calling the service implementation for security questions.
-     */
-    @Autowired
-    private SecurityQuestionService securityQuestionService;
-
-    /**
-     * Bean needed for calling the service implementation for user answers to respective questions.
-     */
-    @Autowired
-    private UserAnswerService userAnswerService;
+@Api(tags = {"User Security Questions API"})
+@SwaggerDefinition(
+        tags = {
+                @Tag(name = "User Security Questions API", description = "Cogni-Bank User Security Questions API for storing user answers for the security questions.")
+        }
+)
+public interface UserSecurityQuestionsController {
 
     // add new question
-    // ToDo: Not yet implemented
-    @PostMapping(path = "/question")
-    public String addANewQuestion() {
-        return "Thanks!";
-    }
-
-    // Get all questions.
-    @GetMapping(path = "/questions")
-    public List<String> getAllQuestions() {
-        List<String> result = securityQuestionService.getAll()
-                .stream().map(SecurityQuestion::getQuestion)
-                .collect(Collectors.toList());
-        System.out.println("In controller-> " + result);
-        return result;
-    }
+    @ApiOperation(value = "It will add a new question to the questions list. (NOT IMPLEMENTED!)")
+    public String addANewQuestion();
 
     // Get all questions with Id's, returns list SecurityQuestion objects
-    @GetMapping(path = "/questionsWithIds")
-    public List<SecurityQuestion> getAllQuestionsWithId() {
-        List<SecurityQuestion> result = securityQuestionService.getAll();
-        return result;
-    }
+    @ApiOperation(value = "Returns all the questions for user sign up.")
+    public List<SecurityQuestion> getAllQuestions();
 
     // To tag answers to the user selected questions.
-    @PostMapping(path = "/createUserAnswer/{userId}")
-    public CreateUserAnswerAndQuestionResponse addUserAnswer(@PathVariable String userId, @Valid @RequestBody CreateUserAnswerAndQuestionRequest addQuestionRequest) {
-        Long generatedId = userAnswerService.addAnswer(userId, addQuestionRequest.getQuestionId(), addQuestionRequest.getAnswer());
-        if(generatedId != null) {
-            return new CreateUserAnswerAndQuestionResponse().withChanged(true);
-        }
-        return new CreateUserAnswerAndQuestionResponse().withChanged(false);
-    }
+    @ApiOperation(value = "Allows to store question and answer for a user during  user sign up.")
+    public CreateUserAnswerAndQuestionResponse addUserAnswer (String userId, CreateUserAnswerAndQuestionRequest addQuestionRequest);
 
-    @GetMapping(path = "/question/{userId}")
-    public List<RetrieveUserQuestionsResponse> getQuestionsForRespectiveUserId(@PathVariable String userId) {
-        final List<SecurityQuestion> securityQuestions = userAnswerService.getUserQuestions(userId);
-        final List<RetrieveUserQuestionsResponse> questionsResponse = securityQuestions
-                .stream()
-                .map(p -> new RetrieveUserQuestionsResponse().withId(p.getId()).withQuestion(p.getQuestion()))
-                .collect(Collectors.toList());
-        return questionsResponse;
-    }
+    @ApiOperation(value = "Retrieve user answer for a submitted question, will be called during password forgotten")
+    public List<RetrieveUserQuestionsResponse> getQuestionsForRespectiveUserId(String userId);
 
-    @PostMapping(path = "/checkUserAnswer/{userId}")
-    public ValidateUserAnswerResponse checkUserAnswer(@PathVariable String userId, @Valid @RequestBody CreateUserAnswerAndQuestionRequest validAnswerRequest) {
-        final boolean isValidAnswer = userAnswerService.checkAnswer(userId,validAnswerRequest.getQuestionId(), validAnswerRequest.getAnswer());
-        return new ValidateUserAnswerResponse().withValidated(isValidAnswer);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        return ex.getBindingResult()
-                .getAllErrors().stream()
-                .map(ObjectError::getDefaultMessage)
-                .collect(Collectors.toList());
-    }
+    @ApiOperation(value = "Validate the user answer during the password reset ")
+    public ValidateUserAnswerResponse checkUserAnswer(String userId, CreateUserAnswerAndQuestionRequest validAnswerRequest);
 
 }

@@ -1,5 +1,6 @@
 package com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller;
 
+import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.controller.impl.UserSecurityQuestionsControllerImpl;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.model.SecurityQuestion;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.SecurityQuestionService;
 import com.cognibank.usermng.cognibankusersecurityquestionsmicroservice.service.UserAnswerService;
@@ -41,7 +42,7 @@ public class UserSecurityQuestionsControllerTest {
     private UserAnswerService userAnswerService;
 
     @InjectMocks
-    private UserSecurityQuestionsController userSecurityQuestionsController;
+    private UserSecurityQuestionsControllerImpl userSecurityQuestionsController;
 
     @Before
     public void settingUpTheTest() {
@@ -51,29 +52,29 @@ public class UserSecurityQuestionsControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userSecurityQuestionsController).build();
     }
 
-    @Test
-    public void testToFetchAllTheQuestions() throws Exception {
-        final String question1 = "How are you?";
-        final String question2 = "I'm asking how are you?";
-        final String question3 = "Seriously, How are you?";
-        List<String> expectedResult = Arrays.asList(question1, question2, question3);
-
-        SecurityQuestion secQuestion1 = new SecurityQuestion().withId(1L).withQuestion(question1);
-        SecurityQuestion secQuestion2 = new SecurityQuestion().withId(2L).withQuestion(question2);
-        SecurityQuestion secQuestion3 = new SecurityQuestion().withId(3L).withQuestion(question3);
-        List<SecurityQuestion> listOfQuestions = Arrays.asList(secQuestion1, secQuestion2, secQuestion3);
-
-        // Mocking the service method of get all the security questions.
-        Mockito.when(securityQuestionService.getAll()).thenReturn(listOfQuestions);
-        // Performing the mock mvc.
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questions").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$[0]").value(expectedResult.get(0)))
-                .andExpect(jsonPath("$[1]").value(expectedResult.get(1)))
-                .andExpect(jsonPath("$[2]").value(expectedResult.get(2)));
-    }
+//    @Test
+//    public void testToFetchAllTheQuestions() throws Exception {
+//        final String question1 = "How are you?";
+//        final String question2 = "I'm asking how are you?";
+//        final String question3 = "Seriously, How are you?";
+//        List<String> expectedResult = Arrays.asList(question1, question2, question3);
+//
+//        SecurityQuestion secQuestion1 = new SecurityQuestion().withId(1L).withQuestion(question1);
+//        SecurityQuestion secQuestion2 = new SecurityQuestion().withId(2L).withQuestion(question2);
+//        SecurityQuestion secQuestion3 = new SecurityQuestion().withId(3L).withQuestion(question3);
+//        List<SecurityQuestion> listOfQuestions = Arrays.asList(secQuestion1, secQuestion2, secQuestion3);
+//
+//        // Mocking the service method of get all the security questions.
+//        Mockito.when(securityQuestionService.getAll()).thenReturn(listOfQuestions);
+//        // Performing the mock mvc.
+//        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questions").accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+//                .andExpect(jsonPath("$[0]").value(expectedResult.get(0)))
+//                .andExpect(jsonPath("$[1]").value(expectedResult.get(1)))
+//                .andExpect(jsonPath("$[2]").value(expectedResult.get(2)));
+//    }
 
     @Test
     public void testToFetchAllTheQuestionsWithIds() throws Exception {
@@ -89,7 +90,7 @@ public class UserSecurityQuestionsControllerTest {
 
 
         // Performing the mock mvc.
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questionsWithIds")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questions")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -112,7 +113,7 @@ public class UserSecurityQuestionsControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(jsonPath("$.created").value("true"));
     }
 
     @Test
