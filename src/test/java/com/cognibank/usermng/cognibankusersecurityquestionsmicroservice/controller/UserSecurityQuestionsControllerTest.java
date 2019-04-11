@@ -33,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UserSecurityQuestionsControllerTest {
 
+    String basePath = "/users/management/securityquestions";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -53,30 +55,7 @@ public class UserSecurityQuestionsControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userSecurityQuestionsController).build();
     }
 
-    @Test
-    @Ignore
-    public void testToFetchAllTheQuestions() throws Exception {
-        final String question1 = "How are you?";
-        final String question2 = "I'm asking how are you?";
-        final String question3 = "Seriously, How are you?";
-        List<String> expectedResult = Arrays.asList(question1, question2, question3);
 
-        SecurityQuestion secQuestion1 = new SecurityQuestion().withId(1L).withQuestion(question1);
-        SecurityQuestion secQuestion2 = new SecurityQuestion().withId(2L).withQuestion(question2);
-        SecurityQuestion secQuestion3 = new SecurityQuestion().withId(3L).withQuestion(question3);
-        List<SecurityQuestion> listOfQuestions = Arrays.asList(secQuestion1, secQuestion2, secQuestion3);
-
-        // Mocking the service method of get all the security questions.
-        Mockito.when(securityQuestionService.getAll()).thenReturn(listOfQuestions);
-        // Performing the mock mvc.
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questions").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$[0]").value(expectedResult.get(0)))
-                .andExpect(jsonPath("$[1]").value(expectedResult.get(1)))
-                .andExpect(jsonPath("$[2]").value(expectedResult.get(2)));
-    }
 
     @Test
     public void testToFetchAllTheQuestionsWithIds() throws Exception {
@@ -92,7 +71,7 @@ public class UserSecurityQuestionsControllerTest {
 
 
         // Performing the mock mvc.
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/questions")
+        mockMvc.perform(MockMvcRequestBuilders.get(basePath.concat("/getAllQuestions"))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -109,7 +88,7 @@ public class UserSecurityQuestionsControllerTest {
         Mockito.when(userAnswerService.addAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/createUserAnswer/12345")
+        mockMvc.perform(MockMvcRequestBuilders.post(basePath.concat("/createUserAnswer/12345"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .content("{\"questionId\":\"1\", \"answer\":\"I am good, thanks\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -125,7 +104,7 @@ public class UserSecurityQuestionsControllerTest {
         /*Mockito.when(userAnswerService.addAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString()))
                 .thenReturn(1L);*/
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/createUserAnswer/12345")
+        mockMvc.perform(MockMvcRequestBuilders.post(basePath.concat("/createUserAnswer/12345"))
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .content("{\"questionId\":1, \"answer\":\"I\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -142,7 +121,7 @@ public class UserSecurityQuestionsControllerTest {
 
         Mockito.when(userAnswerService.getUserQuestions(Mockito.anyString())).thenReturn(expectedQuestions);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usersecurity/question/12345"))
+        mockMvc.perform(MockMvcRequestBuilders.get(basePath.concat("/getQuestion/12345")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -155,7 +134,7 @@ public class UserSecurityQuestionsControllerTest {
     public void testToValidateTheUserAnswer() throws Exception {
         Mockito.when(userAnswerService.checkAnswer(Mockito.anyString(), Mockito.anyLong(), Mockito.anyString())).thenReturn(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/usersecurity/checkUserAnswer/12345")
+        mockMvc.perform(MockMvcRequestBuilders.post(basePath.concat("/checkUserAnswer/12345"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .content("{\"questionId\":1, \"answer\":\"Hello\"}"))

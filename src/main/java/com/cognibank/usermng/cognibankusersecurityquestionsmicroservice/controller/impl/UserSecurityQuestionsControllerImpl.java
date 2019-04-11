@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/api/v1/usersecurity")
+@RequestMapping(path = "/users/management/securityquestions")
 public class UserSecurityQuestionsControllerImpl implements UserSecurityQuestionsController {
 
     /**
@@ -34,25 +34,16 @@ public class UserSecurityQuestionsControllerImpl implements UserSecurityQuestion
     @Autowired
     private UserAnswerService userAnswerService;
 
-    // add new question
-    // ToDo: Not yet implemented
-    @PostMapping(path = "/question")
-    public String addANewQuestion() {
-        return "Thanks!";
-    }
-
-    // Get all questions.
-//    @GetMapping(path = "/questions")
-//    public List<String> getAllQuestions() {
-//        List<String> result = securityQuestionService.getAll()
-//                .stream().map(SecurityQuestion::getQuestion)
-//                .collect(Collectors.toList());
-//        System.out.println("In controller-> " + result);
-//        return result;
+//    // add new question
+//    // ToDo: Not yet implemented
+//    @PostMapping(path = "/question")
+//    public String addANewQuestion() {
+//        return "Thanks!";
 //    }
 
+
     // Get all questions with Id's, returns list SecurityQuestion objects
-    @GetMapping(path = "/questions")
+    @GetMapping(path = "/getAllQuestions")
     public List<SecurityQuestion> getAllQuestions() {
         List<SecurityQuestion> result = securityQuestionService.getAll();
         return result;
@@ -68,7 +59,7 @@ public class UserSecurityQuestionsControllerImpl implements UserSecurityQuestion
         return new CreateUserAnswerAndQuestionResponse().withChanged(false);
     }
 
-    @GetMapping(path = "/question/{userId}")
+    @GetMapping(path = "/getQuestion/{userId}")
     public List<RetrieveUserQuestionsResponse> getQuestionsForRespectiveUserId(@PathVariable String userId) {
         final List<SecurityQuestion> securityQuestions = userAnswerService.getUserQuestions(userId);
         final List<RetrieveUserQuestionsResponse> questionsResponse = securityQuestions

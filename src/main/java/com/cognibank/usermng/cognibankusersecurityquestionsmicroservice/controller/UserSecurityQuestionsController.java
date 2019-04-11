@@ -30,9 +30,6 @@ import java.util.stream.Collectors;
 )
 public interface UserSecurityQuestionsController {
 
-    // add new question
-    @ApiOperation(value = "It will add a new question to the questions list. (NOT IMPLEMENTED!)")
-    public String addANewQuestion();
 
     // Get all questions with Id's, returns list SecurityQuestion objects
     @ApiOperation(value = "Returns all the questions for user sign up.")
