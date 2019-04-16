@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users/management/securityquestions")
+//@CrossOrigin("*")
+@CrossOrigin("*")
 public class UserSecurityQuestionsControllerImpl implements UserSecurityQuestionsController {
 
     /**
